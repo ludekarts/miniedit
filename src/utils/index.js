@@ -1,5 +1,5 @@
-import { selectInlineRange } from "select";
-import { getCaretNode, getCaretPosition, caretAtIndex } from "caret";
+import { selectInlineRange } from "../shared/select";
+import { getCaretNode, getCaretPosition, caretAtIndex } from "../shared/caret";
 
 // Debounce given callback with provided delay.
 export const debounce = (callback, delay) => {

@@ -1,6 +1,6 @@
-import { template } from "travrs";
-import { headlines } from "patterns";
-import { unwrapNode, replaceNode } from "node";
+import { template } from "@ludekarts/utility-belt";
+import { headlines } from "../../shared/patterns";
+import { unwrapNode, replaceNode } from "../../shared/node";
 
 export default function HeaderEditor() {
   return currentTarget => {

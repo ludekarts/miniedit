@@ -48,3 +48,14 @@ table {
 
 /* ---- PREVIEW STYLES ---- */
 
+body {
+	font-family: Lato;
+}
+
+section {
+	width: 690px;
+	padding: 1.5em;
+	margin: 1em auto;
+	border-radius: 4px;
+	background-color: #eee;
+}

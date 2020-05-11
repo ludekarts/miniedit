@@ -1,4 +1,4 @@
-import { markdownToHtml, markdownMarkup } from "patterns";
+import { markdownToHtml, markdownMarkup } from "../shared/patterns";
 
 export function extractMarkdown(container) {
   return Array.from(container.childNodes).reduce((acc, node) => {

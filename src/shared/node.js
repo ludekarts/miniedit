@@ -1,4 +1,4 @@
-import { selectNodeExt, selectNode } from "select";
+import { selectNodeExt, selectNode } from "./select";
 
 // Replaces given node with it's content.
 export const unwrapNode = node => {

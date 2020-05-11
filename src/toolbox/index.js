@@ -1,4 +1,4 @@
-import { createElement } from "travrs";
+import { createElement } from "@ludekarts/utility-belt";
 import factory from "./factory";
 
 export default function Toolbox(content) {

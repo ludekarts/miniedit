@@ -1,5 +1,5 @@
-import { template } from "travrs";
-import { unwrapNode, replaceNode } from "node";
+import { template } from "@ludekarts/utility-belt";
+import { unwrapNode, replaceNode } from "../../shared/node";
 
 export default function LinkEditor() {
   return currentTarget => {

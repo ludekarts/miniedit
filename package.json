@@ -7,7 +7,7 @@
   "unpkg": "dist/miniedit.umd.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "microbundle --no-sourcemap",
+    "build": "microbundle --no-sourcemap --external none",
     "watch": "microbundle watch"
   },
   "keywords": [
@@ -18,5 +18,8 @@
   "license": "MIT",
   "devDependencies": {
     "microbundle": "^0.12.0"
+  },
+  "dependencies": {
+    "@ludekarts/utility-belt": "0.1.0-alpha.2"
   }
 }

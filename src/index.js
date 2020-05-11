@@ -1,7 +1,7 @@
-import { unwrapNode, deleteNode } from "node";
-import { selectNode, selectionToHtml } from "select";
-import { getCaretNode,  getCaretPosition, caretToStart, caretAfterNode } from "caret";
-import { markdownToHtml } from "patterns";
+import { unwrapNode, deleteNode } from "./shared/node";
+import { selectNode, selectionToHtml } from "./shared/select";
+import { getCaretNode,  getCaretPosition, caretToStart, caretAfterNode } from "./shared/caret";
+import { markdownToHtml } from "./shared/patterns";
 import Toolbox from "./toolbox";
 import oberver from "./utils/observer";
 import { parseMarkdown, extractMarkdown } from "./utils/parsers";

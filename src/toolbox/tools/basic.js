@@ -1,5 +1,5 @@
-import { template } from "travrs";
-import { unwrapNode } from "node";
+import { template } from "@ludekarts/utility-belt";
+import { unwrapNode } from "../../shared/node";
 
 export default function BasicEditor() {
   return currentTarget => {
