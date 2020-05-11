@@ -1,0 +1,22 @@
+{
+  "name": "@ludekarts/miniedit",
+  "version": "0.1.0-alpha.1",
+  "description": "Minimalistic rich text editor based on Markdown",
+  "source": "src/index.js",
+  "main": "dist/miniedit.js",
+  "unpkg": "dist/miniedit.umd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "microbundle --no-sourcemap",
+    "watch": "microbundle watch"
+  },
+  "keywords": [
+    "editor",
+    "markdown"
+  ],
+  "author": "Wojciech Ludwin, @ludekarts, ludekarts@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "microbundle": "^0.12.0"
+  }
+}
