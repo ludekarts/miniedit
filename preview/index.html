@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Miniedit preview</title>
+  <title>Miniedit Preview</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+
   <section id="container" class="container"></section>
   <script type="module">
     import minedit from "../dist/miniedit.esm.js";
+    import article from "../dist/article.js";
     const editor = minedit("#container");
-    editor.setText("# hello")
+    editor.setText(article);
   </script>
 </body>
 </html>

@@ -3,19 +3,25 @@ import { unwrapNode, replaceNode } from "../../shared/node";
 
 export default function InlineEditor() {
   return currentTarget => {
-    const element = template(`
-      div.toolbox-controllers
-        button${currentTarget.dataset.md === "strong" ? ".active" : ""}[data-action="bold" title="Bold"]
-          i.fa.fa-bold
-        button${currentTarget.dataset.md === "italic" ? ".active" : ""}[data-action="italic" title="Italic"]
-          i.fa.fa-italic
-        button${currentTarget.dataset.md === "strike" ? ".active" : ""}[data-action="strike" title="Strike through"]
-          i.fa.fa-strikethrough
-        button[data-action="clear" title="Clear styles"]
-          i.fa.fa-eraser
-        button[data-action="close" title="Close toolbox"]
-          i.fa.fa-times
-    `);
+    const element = template`
+      <div class="toolbox-controllers">
+        <button class="${currentTarget.dataset.md === "strong" ? ".active" : ""}" data-action="bold" title="Bold">
+          <i class="fa fa-bold">B</i>
+        </button>
+        <button class="${currentTarget.dataset.md === "italic" ? ".active" : ""}" data-action="italic" title="Italic">
+          <i class="fa fa-italic">I</i>
+        </button>
+        <button class="${currentTarget.dataset.md === "strike" ? ".active" : ""}" data-action="strike" title="Strike through">
+          <i class="fa fa-strike">S</i>
+        </button>
+        <button data-action="clear" title="Clear styles">
+          <i class="fa fa-eraser">⚌</i>
+        </button>
+        <button data-action="close" title="Close toolbox">
+          <i class="fa fa-times">✖</i>
+        </button>
+      </div>
+    `;
 
 
     // ---- Methods ------------

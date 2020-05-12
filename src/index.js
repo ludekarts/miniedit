@@ -1,10 +1,10 @@
-import { unwrapNode, deleteNode } from "./shared/node";
-import { selectNode, selectionToHtml } from "./shared/select";
-import { getCaretNode,  getCaretPosition, caretToStart, caretAfterNode } from "./shared/caret";
-import { markdownToHtml } from "./shared/patterns";
 import Toolbox from "./toolbox";
 import oberver from "./utils/observer";
+import { markdownToHtml } from "./shared/patterns";
+import { unwrapNode, deleteNode } from "./shared/node";
+import { selectNode, selectionToHtml } from "./shared/select";
 import { parseMarkdown, extractMarkdown } from "./utils/parsers";
+import { getCaretNode,  getCaretPosition, caretToStart, caretAfterNode } from "./shared/caret";
 import { debounce, chromeEolHack, transform, resetCurrentCaretStyle, attachStyle } from "./utils";
 
 import styles from "./styles.js";

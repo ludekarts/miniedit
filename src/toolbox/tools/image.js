@@ -11,17 +11,20 @@ export default function ImageEditor() {
         </div>
         <div>
           <button data-action="update" title="Update image">
-            <i class="fa fa-check"></i>
+            <i class="fa fa-check">✔</i>
           </button>
           <button data-action="copy" title="Copy link"">
-            <i class="fa fa-clipboard"></i>
+            <i class="fa fa-clipboard">❐</i>
           </button>
           <button data-action="close" title="Close toolbox">
-            <i class="fa fa-times"></i>
+            <i class="fa fa-times">✖</i>
           </button>
         </div>
       </div>
     `;
+
+    console.log(refs);
+
 
     refs.url.value = currentTarget.firstElementChild.src;
     refs.alt.value = currentTarget.firstElementChild.alt;
