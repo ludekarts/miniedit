@@ -50,7 +50,7 @@ table {
 body {
 	font-family: "Dosis", sans-serif;
 	line-height: 1.3em;
-	background-color: #eee;
+	background-color: #9fa8da;
 }
 
 section {
@@ -70,3 +70,9 @@ em {
 	font-style: italic;
 }
 
+.me-header {
+	font-size: 2em;
+	line-height: 1;
+	text-align: center;
+	padding: 0.5em 0.5em 0em;
+}

@@ -4,22 +4,26 @@ import { markdownToHtml } from "./shared/patterns";
 import { unwrapNode, deleteNode } from "./shared/node";
 import { selectNode, selectionToHtml } from "./shared/select";
 import { parseMarkdown, extractMarkdown } from "./utils/parsers";
-import { getCaretNode,  getCaretPosition, caretToStart, caretAfterNode } from "./shared/caret";
+import { getCaretNode,  getCaretPosition, caretToStart, caretAfterNode, caretBeforeNode } from "./shared/caret";
 import { debounce, chromeEolHack, transform, resetCurrentCaretStyle, attachStyle } from "./utils";
 
-import styles from "./styles.js";
-attachStyle(styles);
+import createStyles from "./styles.js";
 
-export default function miniedit(selector) {
+export default function miniedit(selector, namespace) {
+
+  // Attach CSS styles.
+  attachStyle(createStyles(namespace));
 
   // Global referenes.
   let undoMode = false;
+  let selectedBlock = null;
 
   // Set main content container.
   let content = selector instanceof HTMLElement
     ? selector
     : document.querySelector(selector);
 
+  content.dataset.block = "true";
   content.dataset.miniedit = "🧱";
   content.setAttribute("contenteditable", true);
   content.focus();
@@ -39,9 +43,12 @@ export default function miniedit(selector) {
 
   // Handle CLICKS.
   content.addEventListener("click", event => {
+    selectedBlock = null;
+
     if (event.target.nodeName === "FIGURE") {
       event.preventDefault();
       selectNode(event.target);
+      selectedBlock = event.target;
       (event.ctrlKey || event.metaKey) && toolbox.open(event.target);
     }
     else if (event.target.dataset && event.target.dataset.md && (event.ctrlKey || event.metaKey)) {
@@ -54,6 +61,13 @@ export default function miniedit(selector) {
   // Handle KEYBOARD.
   content.addEventListener("keydown", event => {
 
+    // Remvoe selected noneditable block.
+    if (selectedBlock && !event.code.includes("Arrow")) {
+      deleteNode(selectedBlock);
+    }
+
+    selectedBlock = null;
+
     // ENTER.
     if (event.code === "Enter") {
       event.preventDefault();
@@ -64,7 +78,11 @@ export default function miniedit(selector) {
 
       // Prevent from breaking non-text nodes.
       if (node.dataset.md) {
-        caretAfterNode(node);
+        getCaretPosition(text) === 0
+          // If carret at the begining insert enter before node.
+          ? caretBeforeNode(node.previousSibling)
+          // Insert enter after node.
+          : caretAfterNode(node);
       }
 
       // Insert custom Line Break
@@ -72,7 +90,7 @@ export default function miniedit(selector) {
       return;
     }
 
-    // CTRL + SPACE.
+    // Ctrl/Command + Space.
     if ((event.ctrlKey || event.metaKey) && event.code === "Space") {
       const text = getCaretNode();
       const node = text.parentNode;
@@ -82,13 +100,13 @@ export default function miniedit(selector) {
       return;
     }
 
-    // BACKSPACE.
+    // Backspace.
     if (event.code === "Backspace") {
-      const text = getCaretNode();
+      // const text = getCaretNode();
       const selection = window.getSelection().toString().length;
 
       // Code below removes text and associated styles when user selects entire
-      // styled text node (e.g. strong) and removes it with Backspace.
+      // styled text node (e.g. strong) and removes it with Backspace key.
       if (selection > 0) {
         event.preventDefault();
         document.execCommand("delete");
@@ -96,18 +114,6 @@ export default function miniedit(selector) {
         return;
       }
 
-      // When caret is at the BEGINING of node unwrap the node.
-      if (getCaretPosition(text) === 0) {
-        if (text.dataset && text.dataset.noedit) {
-          event.preventDefault();
-          deleteNode(text);
-        } else {
-          const prevNode = text.parentNode.previousSibling;
-          unwrapNode(text.parentNode);
-          prevNode && caretAfterNode(prevNode);
-        }
-
-      }
       return;
     }
 
@@ -119,7 +125,7 @@ export default function miniedit(selector) {
       const nonZeroSelection = selection.toString().length > 0;
 
       // Code below removes text and associated styles when user selects entire
-      // styled text node (e.g. strong) and removes it with Backspace.
+      // styled text node (e.g. strong) and removes it with Delete key.
       if (nonZeroSelection) {
         event.preventDefault();
         document.execCommand("delete");
@@ -140,27 +146,38 @@ export default function miniedit(selector) {
 
     // Ctrl + Z.
     if (event.code === "KeyZ" && (event.ctrlKey || event.metaKey)) {
-      // Do not render - allow to get back to moment when markdown haven't been yet converted into node.
+      // Do not render - allow to get back to the moment when markdown haven't been yet converted into node.
       undoMode = true;
       return;
     }
 
+    // Display markdown code.
     if (event.code === "F2") {
-      return console.log(getText());
+      return console.log(extractMarkdown(content));
     }
 
+    // Unwrap caret node.
     if (event.code === "F4") {
       const node = getCaretNode();
       chromeEolHack(() => {
         unwrapNode(node.parentNode);
       })
-      return ;
+      return;
     }
 
-    // Do not allow input text into noneditable nodes.
+    // Do not allow input text into noneditable nodes + select node.
     const node = getCaretNode();
-    if (node.dataset && node.dataset.noedit && !event.code.includes("Arrow")) {
+    if (node.dataset && node.dataset.noedit) {
       event.preventDefault();
+
+      if (event.code === "ArrowDown" || event.code === "ArrowRight") {
+        caretAfterNode(node.nextSibling);
+      } else if (event.code === "ArrowUp" || event.code === "ArrowLeft") {
+        caretBeforeNode(node.previousSibling);
+      }
+
+      selectNode(node);
+      selectedBlock = node;
     }
 
     // Reset UndoMode.
@@ -170,6 +187,14 @@ export default function miniedit(selector) {
     render();
   });
 
+  // Prevent Drag & Drop.
+  content.addEventListener("drag", event => {
+    event.preventDefault();
+  });
+
+  content.addEventListener("dragover", event => {
+    event.preventDefault();
+  })
 
   // CLIPBOARD.
   content.addEventListener("copy", event => {
@@ -185,12 +210,21 @@ export default function miniedit(selector) {
 
   content.addEventListener("paste", event => {
     event.preventDefault();
-    chromeEolHack(() => {
-      document.execCommand("insertHTML", false, parseMarkdown(
-        event.clipboardData.getData("text/plain")
-      ));
-    })
+    const node = getCaretNode();
 
+    if (node !== content && !node.parentNode.dataset.block) {
+      // Do not allow for pasting formatted content into inline nodes.
+      const container = document.createElement("div");
+      container.innerHTML = parseMarkdown(event.clipboardData.getData("text/plain"));
+      document.execCommand("insertHTML", false, container.textContent);
+    } else {
+      // Paste formatted content.
+      chromeEolHack(() => {
+        document.execCommand("insertHTML", false, parseMarkdown(
+          event.clipboardData.getData("text/plain")
+        ));
+      });
+    }
   });
 
   // DOM clenup.
