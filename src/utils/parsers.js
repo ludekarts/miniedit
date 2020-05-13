@@ -10,7 +10,11 @@ export function extractMarkdown(container) {
       acc += "\n";
     // Images.
     } else if (node.nodeName === "FIGURE") {
-      acc += markdownMarkup.img(node.firstElementChild.src, node.firstElementChild.alt);
+      if (node.dataset.md === "embed")  {
+        acc += markdownMarkup.embed(node.firstElementChild.alt);
+      } else {
+        acc += markdownMarkup.img(node.firstElementChild.src, node.firstElementChild.alt);
+      }
     // Links.
     } else if (node.nodeName === "A") {
       acc += markdownMarkup.link(node.href, node.textContent);

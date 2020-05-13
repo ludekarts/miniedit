@@ -45,21 +45,53 @@ export default function createStyles(namespace = "") {
     *[data-miniedit]$NS blockquote[data-md="quote"] {
       margin: 0;
       width: 100%;
+      padding: 0.3em 1em;
       display: inline-block;
-      padding: 5px 0 5px 20px;
-      border-left: 3px solid #4199d5;
+      background-color: #eee;
     }
 
-    *[data-miniedit]$NS figure[data-md="img"] {
+    *[data-miniedit]$NS figure[data-md="img"],
+    *[data-miniedit]$NS figure[data-md="embed"] {
       margin: 0;
+      position: relative;
       display: inline-block;
     }
 
-    *[data-miniedit]$NS figure[data-md="img"] > * {
+    *[data-miniedit]$NS figure[data-md="embed"]::before {
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      content: "";
+      z-index: 10;
+      margin-left: 5px;
+      position: absolute;
+      border-top: 25px solid transparent;
+      border-bottom: 25px solid transparent;
+      border-left: 35px solid rgba(0,0,0,0.85);
+      transform: translateX(-50%) translateY(-50%);
+    }
+
+    *[data-miniedit]$NS figure[data-md="embed"]::after {
+      top: 50%;
+      left: 50%;
+      z-index: 10;
+      content: "";
+      width: 110px;
+      height: 110px;
+      position: absolute;
+      border-radius: 50%;
+      border: 10px solid rgba(0,0,0,0.85);
+      transform: translateX(-50%) translateY(-50%);
+    }
+
+    *[data-miniedit]$NS figure[data-md="img"] > *,
+    *[data-miniedit]$NS figure[data-md="embed"] > * {
       pointer-events: none;
     }
 
-    *[data-miniedit]$NS figure[data-md="img"] > img {
+    *[data-miniedit]$NS figure[data-md="img"] > img,
+    *[data-miniedit]$NS figure[data-md="embed"] > img {
       height: auto;
       display: block;
       max-width: 100%;
@@ -82,12 +114,6 @@ export default function createStyles(namespace = "") {
       display: inline-block;
       border-bottom: 1px solid #ccc;
     }
-
-    *[data-miniedit]$NS strong[data-md="strong"] {}
-    *[data-miniedit]$NS em[data-md="italic"] {}
-    *[data-miniedit]$NS s[data-md="strike"] {}
-    *[data-miniedit]$NS sup[data-md="upper"] {}
-    *[data-miniedit]$NS br[data-md="nl"] {}
 
     /* TOOLBOX */
 

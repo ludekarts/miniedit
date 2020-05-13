@@ -66,11 +66,21 @@ export const markdownToHtml = [
     format: (match, name, url) => `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${url}" alt="${name}"/></figure>`,
   },
   {
-    // Paste image /link.
+    // Paste image/link.
     match: /^(http[^\s]+)$/gm,
-    format: (match, content) => /\.(png|jpe?g|svg|tiff)$/g.test(content)
-      ? `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${content}" alt="figure"/></figure>`
-      : `<a href="${content}" data-md="link">${cropUrl(content)}</a>`
+    format: (match, url) => {
+      const isImage = /\.(gif|png|jpe?g|svg|tiff)$/g.test(url);
+
+      if (isImage) {
+        return `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${url}" alt="figure"/></figure>`;
+      }
+
+      if (url.includes("youtube.com")) {
+        return `<figure data-md="embed" data-block="true" data-noedit="true"data-click="showEmbedOptions" data><img src="${formatYTCover(url)}" alt="${url}"/></figure>`
+      }
+
+      return `<a href="${url}" data-md="link">${cropUrl(url)}</a>`;
+    }
   },
   {
     // New Lines.
@@ -99,13 +109,18 @@ export const markdownMarkup = {
   "upper": content => `^${content}^`,
   "quote": content => `> ${content}`,
   "line": _ => `---`,
+  "embed": (url) => `[${url}](${url})`,
   "link": (url, name) => `[${name}](${url})`,
   "img": (url, name) => `![${name}](${url})`,
 };
 
 // ---- HELPERS ----------------
 
-function cropUrl(content) {
-  const text = content.slice(content.lastIndexOf("/") + 1, content.length);
-  return !text.length ? content : text;
+function cropUrl(url) {
+  return url.length > 37 ? `${url.slice(0, 37)}...` : url;
+}
+
+function formatYTCover(url) {
+  const searchParams = new URLSearchParams(url.slice(url.indexOf("?") + 1));
+  return `https://i3.ytimg.com/vi/${searchParams.get("v")}/maxresdefault.jpg`;
 }

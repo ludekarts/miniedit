@@ -7,9 +7,11 @@ import { parseMarkdown, extractMarkdown } from "./utils/parsers";
 import { getCaretNode,  getCaretPosition, caretToStart, caretAfterNode, caretBeforeNode } from "./shared/caret";
 import { debounce, chromeEolHack, transform, resetCurrentCaretStyle, attachStyle } from "./utils";
 
+// Styles.
 import createStyles from "./styles.js";
 
-export default function miniedit(selector, namespace) {
+// Core.
+export default function MiniEdit(selector, namespace) {
 
   // Attach CSS styles.
   attachStyle(createStyles(namespace));
@@ -45,7 +47,7 @@ export default function miniedit(selector, namespace) {
   content.addEventListener("click", event => {
     selectedBlock = null;
 
-    if (event.target.nodeName === "FIGURE") {
+    if (event.target.dataset.noedit) {
       event.preventDefault();
       selectNode(event.target);
       selectedBlock = event.target;
@@ -62,7 +64,7 @@ export default function miniedit(selector, namespace) {
   content.addEventListener("keydown", event => {
 
     // Remvoe selected noneditable block.
-    if (selectedBlock && !event.code.includes("Arrow")) {
+    if (selectedBlock && !event.code.includes("Arrow") && !(event.ctrlKey || event.metaKey)) {
       deleteNode(selectedBlock);
     }
 
