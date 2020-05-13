@@ -1,5 +1,5 @@
 import { template } from "@ludekarts/utility-belt";
-import { selectNode } from "../../shared/select";
+import { selectNodeExt } from "../../shared/select";
 
 export default function ImageEditor() {
   return currentTarget => {
@@ -8,6 +8,7 @@ export default function ImageEditor() {
         <div class="link list">
           <input ref="alt" class="name" type="text" placeholder="Image alt text">
           <input ref="url" class="name" type="text" placeholder="Image URL">
+          <input ref="link" class="name" type="text" placeholder="External URL">
         </div>
         <div>
           <button data-action="update" title="Update image">
@@ -23,20 +24,21 @@ export default function ImageEditor() {
       </div>
     `;
 
-    console.log(refs);
-
-
     refs.url.value = currentTarget.firstElementChild.src;
     refs.alt.value = currentTarget.firstElementChild.alt;
+    if (currentTarget.dataset.link) {
+      refs.link.value = currentTarget.dataset.link;
+    }
+
 
     // ---- Methods ------------
 
 
     function updateTarget() {
-      selectNode(currentTarget);
-      document.execCommand("insertHTML", false, `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${refs.url.value}" alt="${refs.alt.value}"/></figure>`);
+      selectNodeExt(currentTarget);
+      const link = refs.link.value ? `data-link="${refs.link.value}" ` : "";
+      document.execCommand("insertHTML", false, `<figure data-md="img" data-block="true" data-noedit="true" ${link}data-click="showImageOptions"><img src="${refs.url.value}" alt="${refs.alt.value}"/></figure>`);
     }
-
 
     function copyLink() {
       refs.url.select();
@@ -44,7 +46,9 @@ export default function ImageEditor() {
       refs.url.blur();
     }
 
+
     // ---- API ----------------
+
     return {
       element,
       command: cmd => {

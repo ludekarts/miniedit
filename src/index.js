@@ -52,11 +52,14 @@ export default function MiniEdit(selector, namespace) {
       selectNode(event.target);
       selectedBlock = event.target;
       (event.ctrlKey || event.metaKey) && toolbox.open(event.target);
-    }
-    else if (event.target.dataset && event.target.dataset.md && (event.ctrlKey || event.metaKey)) {
+      return;
+    } else if (event.target.dataset && event.target.dataset.md && (event.ctrlKey || event.metaKey)) {
       event.stopPropagation();
       toolbox.open(event.target);
+      return;
     }
+
+    toolbox.close();
   });
 
 
@@ -151,6 +154,10 @@ export default function MiniEdit(selector, namespace) {
       // Do not render - allow to get back to the moment when markdown haven't been yet converted into node.
       undoMode = true;
       return;
+    }
+
+    if ((event.ctrlKey || event.metaKey) && (event.code === "KeyB" || event.code === "KeyI")) {
+      return event.preventDefault();
     }
 
     // Display markdown code.

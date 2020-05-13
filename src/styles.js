@@ -38,10 +38,6 @@ export default function createStyles(namespace = "") {
       line-height: 1.2em;
     }
 
-    *[data-miniedit]$NS h5[data-md="#####"] {}
-
-    *[data-miniedit]$NS h6[data-md="######"] {}
-
     *[data-miniedit]$NS blockquote[data-md="quote"] {
       margin: 0;
       width: 100%;

@@ -1,6 +1,7 @@
 import LinkEditor from "./tools/link";
 import BasicEditor from "./tools/basic";
 import ImageEditor from "./tools/image";
+import EmbedEditor from "./tools/embed";
 import InlineEditor from "./tools/inline";
 import HeadlineEditor from "./tools/headline";
 
@@ -8,6 +9,7 @@ export default function ToolsFactory() {
 
   const link = LinkEditor();
   const basic = BasicEditor();
+  const embed = EmbedEditor();
   const image = ImageEditor();
   const inline = InlineEditor();
   const headline = HeadlineEditor();
@@ -31,6 +33,7 @@ export default function ToolsFactory() {
     "link": link,
 
     "img": image,
+    "embed": embed,
   };
 
   return {

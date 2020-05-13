@@ -56,14 +56,19 @@ export const markdownToHtml = [
     format: (match, content) => `<sup data-md="upper">${content.trim()}</sup>`
   },
   {
-    // Links.
-    match: /([^!])\[(.+?)\]\((.+?)\)/g,
-    format: (match, prefix, name, url) => `${prefix}<a href="${url}" data-md="link">${name}</a>`,
+    // Linked images.
+    match: /\[!\[(.+?)\]\((.+?)\)\]\((.+?)\)/gm,
+    format: (match, alt, imgUrl, url) => `<figure data-md="img" data-block="true" data-noedit="true" data-link="${url}" data-click="showImageOptions"><img src="${imgUrl}" alt="${alt}"/></figure>`,
   },
   {
-    // Images.
-    match: /!\[(.*?)\]\((.+?)\)/gm,
-    format: (match, name, url) => `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${url}" alt="${name}"/></figure>`,
+    // Images and Links.
+    match: /!?\[(.*?)\]\((.*?)\)/gm,
+    format: (match, text, url) => {
+      if (match.indexOf("!") === 0) {
+        return `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${url}" alt="${text}"/></figure>`;
+      }
+      return `<a href="${url}" data-md="link">${text}</a>`;
+    }
   },
   {
     // Paste image/link.
@@ -112,6 +117,7 @@ export const markdownMarkup = {
   "embed": (url) => `[${url}](${url})`,
   "link": (url, name) => `[${name}](${url})`,
   "img": (url, name) => `![${name}](${url})`,
+  "imglink": (url, name, link) => `[![${name}](${url})](${link})`,
 };
 
 // ---- HELPERS ----------------

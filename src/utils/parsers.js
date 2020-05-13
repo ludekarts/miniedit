@@ -11,8 +11,13 @@ export function extractMarkdown(container) {
     // Images.
     } else if (node.nodeName === "FIGURE") {
       if (node.dataset.md === "embed")  {
+        // Embed covers.
         acc += markdownMarkup.embed(node.firstElementChild.alt);
+      } else if (node.dataset.link) {
+        // Linked images.
+        acc += markdownMarkup.imglink(node.firstElementChild.src, node.firstElementChild.alt, node.dataset.link);
       } else {
+        // Reular images.
         acc += markdownMarkup.img(node.firstElementChild.src, node.firstElementChild.alt);
       }
     // Links.

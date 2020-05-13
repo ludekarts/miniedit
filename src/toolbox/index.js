@@ -15,10 +15,8 @@ export default function Toolbox(content) {
 
   content.parentNode.appendChild(element);
 
-  // Core.
+  // Toolbox core.
   function showToolbox(target) {
-
-    console.log(target);
 
     // Get current editor instance.
     const editor = toolsFactory.getEditor(target.dataset.md, currentTarget);
@@ -31,13 +29,11 @@ export default function Toolbox(content) {
     element.classList.add("active");
 
     // Set listeners for close events.
-    content.addEventListener("click", watchForClose);
     window.addEventListener("scroll", watchForClose);
   }
 
   function watchForClose(event) {
     if (!element.contains(event.target)) {
-      content.removeEventListener("click", watchForClose);
       window.removeEventListener("scroll", watchForClose);
       element.classList.remove("active");
       currentTarget = null;
@@ -69,17 +65,23 @@ export default function Toolbox(content) {
   element.addEventListener("click", event => {
     if (!event.target.dataset || !event.target.dataset.action) return;
     if (event.target.dataset.action === "close") return closeToolbox();
+    // NOTE: If command returns "true" tollbox will NOT CLOSE by default.
     if (currentTool) {
-      // If command returns "true" tollbox WILL NOT CLOSE by default.
       !currentTool.command(event.target.dataset.action) && closeToolbox();
     }
   })
 
-  // Api.
+  // ---- API ----------------
+
   return {
-    open: target => {
+    open(target) {
       currentTarget = target;
       showToolbox(currentTarget);
-    }
+    },
+
+    close() {
+      currentTarget = null;
+      closeToolbox();
+    },
   }
 }
