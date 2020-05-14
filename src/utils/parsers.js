@@ -22,11 +22,11 @@ export function extractMarkdown(container) {
       }
     // Links.
     } else if (node.nodeName === "A") {
-      acc += markdownMarkup.link(node.href, node.textContent);
+      acc += markdownMarkup.link(node.href, extractMarkdown(node));
     // Nested elements.
     } else {
       const transform = markdownMarkup[node.dataset.md];
-      acc +=  transform ? transform(extractMarkdown(node)) : node.textContent;
+      acc += transform ? transform(extractMarkdown(node)) : node.textContent;
     }
     return acc;
   }, "");

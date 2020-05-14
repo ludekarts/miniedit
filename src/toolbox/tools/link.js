@@ -20,7 +20,7 @@ export default function LinkEditor() {
             <i class="fa fa-clipboard">❐</i>
           </button>
           <button data-action="clear" title="Clear styles">
-            <i class="fa fa-eraser">⚌</i>
+            <i class="fa fa-eraser">※</i>
           </button>
           <button data-action="close" title="Close toolbox">
             <i class="fa fa-times">✖</i>
@@ -31,6 +31,7 @@ export default function LinkEditor() {
 
     refs.url.value = currentTarget.href;
     refs.name.value = currentTarget.textContent;
+
 
     // ---- Methods ------------
 
@@ -58,6 +59,7 @@ export default function LinkEditor() {
     }
 
     // ---- API ----------------
+
     return {
       element,
       command: cmd => {
@@ -83,6 +85,5 @@ export default function LinkEditor() {
         }
       }
     };
-
-  }
+  };
 }

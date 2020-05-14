@@ -1,5 +1,4 @@
 import { createElement } from "@ludekarts/utility-belt";
-// import { extractMarkdown } from "../utils/parsers";
 import { selectionToHtml } from "../shared/select";
 import factory from "./factory";
 
@@ -52,12 +51,15 @@ export default function Toolbox(content) {
     element.classList.remove("active");
   }
 
-  // Handle tools internal buttons events.
+  // Handle tools internal buttons events -> to unified actions handling among all tools & simplify tool code.
   element.addEventListener("click", event => {
+    // Discard all irrelevant clicks.
     if (!event.target.dataset || !event.target.dataset.action) return;
+    // Default close action for all tools.
     if (event.target.dataset.action === "close") return closeToolbox();
-    // NOTE: If command returns "true" tollbox will NOT CLOSE by default.
+    // Run given command in currentTool and close toolbox.
     if (currentTool) {
+      // NOTE: If command returns "true" tollbox will NOT CLOSE by default.
       !currentTool.command(event.target.dataset.action) && closeToolbox();
     }
   })
@@ -79,8 +81,6 @@ export default function Toolbox(content) {
       const selectedHtml = selectionToHtml();
       selectedHtml.dataset.md = "selection";
       currentTarget = selectedHtml;
-      console.log(currentTarget);
-
       showToolbox();
     }
   });

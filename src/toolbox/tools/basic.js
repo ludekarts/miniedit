@@ -52,21 +52,21 @@ export default function BasicEditor() {
     function boldElement() {
       insertNode(
         currentTarget,
-        `<strong data-md="bold">${currentTarget.textContent}</strong>`
+        `<strong data-md="bold">${currentTarget.innerHTML}</strong>`
       );
     }
 
     function italicElement() {
       insertNode(
         currentTarget,
-        `<em data-md="italic">${currentTarget.textContent}</em>`
+        `<em data-md="italic">${currentTarget.innerHTML}</em>`
       );
     }
 
     function strikeElement() {
       insertNode(
         currentTarget,
-        `<s data-md="strike">${currentTarget.textContent}</s>`
+        `<s data-md="strike">${currentTarget.innerHTML}</s>`
       );
     }
 
@@ -80,7 +80,7 @@ export default function BasicEditor() {
     function linkElement() {
       insertNode(
         currentTarget,
-        `<a data-md="link" href="">${currentTarget.textContent}</a>`
+        `<a data-md="link" href="">${currentTarget.innerHTML}</a>`
       );
     }
 

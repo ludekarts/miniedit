@@ -36,6 +36,6 @@ export default function ToolsFactory() {
     getEditor: (type, target) => {
       const editor = editors[type] || basic;
       return editor(target);
-    }
-  }
+    },
+  };
 }

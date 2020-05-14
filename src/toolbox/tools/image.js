@@ -33,7 +33,6 @@ export default function ImageEditor() {
 
     // ---- Methods ------------
 
-
     function updateTarget() {
       selectNodeExt(currentTarget);
       const link = refs.link.value ? `data-link="${refs.link.value}" ` : "";
@@ -66,6 +65,5 @@ export default function ImageEditor() {
         }
       }
     };
-
   }
 }
