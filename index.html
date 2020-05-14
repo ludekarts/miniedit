@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniEdit Preview</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <h1 class="me-header">MiniEdit</h1>
+  <section id="container" class="container"></section>
+  <script type="module">
+    import MiniEdit from "./miniedit.esm.js";
+    import article from "./sample-text.js";
+    const editor = MiniEdit("#container");
+    editor.setText(article);
+  </script>
+</body>
+</html>
