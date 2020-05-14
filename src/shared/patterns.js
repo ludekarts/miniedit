@@ -38,7 +38,7 @@ export const markdownToHtml = [
   {
     // Bold
     match: /\*\*(.+?)\*\*/g,
-    format: (match, content) => `<strong data-md="strong">${content.trim()}</strong>`
+    format: (match, content) => `<strong data-md="bold">${content.trim()}</strong>`
   },
   {
     // Italic.
@@ -108,7 +108,7 @@ export const markdownMarkup = {
   "####": content => `#### ${content}`,
   "#####": content => `##### ${content}`,
   "######": content => `###### ${content}`,
-  "strong": content => `**${content}**`,
+  "bold": content => `**${content}**`,
   "italic": content => `*${content}*`,
   "strike": content => `~~${content}~~`,
   "upper": content => `^${content}^`,

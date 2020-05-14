@@ -2,8 +2,6 @@ import LinkEditor from "./tools/link";
 import BasicEditor from "./tools/basic";
 import ImageEditor from "./tools/image";
 import EmbedEditor from "./tools/embed";
-import InlineEditor from "./tools/inline";
-import HeadlineEditor from "./tools/headline";
 
 export default function ToolsFactory() {
 
@@ -11,20 +9,18 @@ export default function ToolsFactory() {
   const basic = BasicEditor();
   const embed = EmbedEditor();
   const image = ImageEditor();
-  const inline = InlineEditor();
-  const headline = HeadlineEditor();
 
   const editors = {
-    "italic" : inline,
-    "strong" : inline,
-    "strike" : inline,
+    "italic" : basic,
+    "strong" : basic,
+    "strike" : basic,
 
-    "#" : headline,
-    "##" : headline,
-    "###" : headline,
-    "####" : headline,
-    "#####" : headline,
-    "######" : headline,
+    "#" : basic,
+    "##" : basic,
+    "###" : basic,
+    "####" : basic,
+    "#####" : basic,
+    "######" : basic,
 
     "quote": basic,
     "upper": basic,

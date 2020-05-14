@@ -73,6 +73,11 @@ export default function MiniEdit(selector, namespace) {
 
     selectedBlock = null;
 
+    // Show select toolnbox.
+    if ((event.ctrlKey || event.metaKey) && window.getSelection().toString().length) {
+      toolbox.selection(extractMarkdown(selectionToHtml()));
+    }
+
     // ENTER.
     if (event.code === "Enter") {
       event.preventDefault();

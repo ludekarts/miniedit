@@ -49,6 +49,7 @@ export default function createStyles(namespace = "") {
     *[data-miniedit]$NS figure[data-md="img"],
     *[data-miniedit]$NS figure[data-md="embed"] {
       margin: 0;
+      overflow: hidden;
       position: relative;
       display: inline-block;
     }
@@ -128,9 +129,17 @@ export default function createStyles(namespace = "") {
 
     div[data-miniedit-toolbox].active {
       opacity: 1;
-      visibility:visible;
+      visibility: visible;
       transform: translateZ(0);
       transition: opacity .3s ease, visibility 0s, top .4s ease, left .4s ease, transform .3s ease;
+    }
+
+    div[data-miniedit-toolbox] .toolbox-controllers .headlines {
+      display: none;
+    }
+
+    div[data-miniedit-toolbox] .toolbox-controllers .headlines.active {
+      display: block;
     }
 
     div[data-miniedit-toolbox] .toolbox-controllers button {
@@ -140,6 +149,7 @@ export default function createStyles(namespace = "") {
       color: white;
       background: none;
       font-weight: 500;
+      position: relative;
       display: inline-block;
       transition: box-shadow .3s ease;
       box-shadow: rgba(29, 100, 224, 0) 0px -2px 0px 0px inset;
@@ -150,10 +160,31 @@ export default function createStyles(namespace = "") {
     }
 
     div[data-miniedit-toolbox] .toolbox-controllers button:hover,
-    div[data-miniedit-toolbox] .toolbox-controllers button:focus,
-    div[data-miniedit-toolbox] .toolbox-controllers button.active {
+    div[data-miniedit-toolbox] .toolbox-controllers button:focus {
       outline: none;
       box-shadow: rgb(29, 100, 224) 0px -2px 0px 0px inset;
+    }
+
+    div[data-miniedit-toolbox] .toolbox-controllers button.active::before {
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      content: "";
+      border-radius: 4px;
+      position: absolute;
+      background-color: rgba(0,0,0,0.2);
+    }
+
+    div[data-miniedit-toolbox] .toolbox-controllers button.active::after {
+      top: 3px;
+      right: 3px;
+      width: 5px;
+      height: 5px;
+      content: "";
+      border-radius: 50%;
+      position: absolute;
+      background-color: #dc3c09;
     }
 
     div[data-miniedit-toolbox] .toolbox-controllers button.pressable:active {

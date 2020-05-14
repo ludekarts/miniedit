@@ -50,17 +50,6 @@ export default function Toolbox(content) {
     element.classList.remove("active");
   }
 
-  // Handle text selection.
-  content.addEventListener("dblclick", () => {
-    // const selection = window.getSelection();
-    // if (selection.toString().length) {
-    //   const range = selection.anchorNode
-    //     ? selection.getRangeAt(0)
-    //     : new Range();
-    //   showToolbox(range);
-    // }
-  });
-
   // Handle tools internal buttons events.
   element.addEventListener("click", event => {
     if (!event.target.dataset || !event.target.dataset.action) return;
@@ -73,7 +62,7 @@ export default function Toolbox(content) {
 
   // ---- API ----------------
 
-  return {
+  return Object.freeze({
     open(target) {
       currentTarget = target;
       showToolbox(currentTarget);
@@ -83,5 +72,10 @@ export default function Toolbox(content) {
       currentTarget = null;
       closeToolbox();
     },
-  }
+
+    selection(markdown) {
+      console.log(markdown);
+      showToolbox({dataset:{md:"quote"}});
+    }
+  });
 }
