@@ -23,7 +23,7 @@ export const deleteNode = node => {
 
 // Replaces givern node with new content.
 export const replaceNode = (node, contnent) => {
-  selectNode(node);
+  node && selectNode(node);
   document.execCommand("insertHTML", false, contnent);
 };
 

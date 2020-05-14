@@ -19,6 +19,7 @@ export default function MiniEdit(selector, namespace) {
   // Global referenes.
   let undoMode = false;
   let selectedBlock = null;
+  let selectionMenuLock = false;
 
   // Set main content container.
   let content = selector instanceof HTMLElement
@@ -43,23 +44,41 @@ export default function MiniEdit(selector, namespace) {
     });
   }, 300);
 
-  // Handle CLICKS.
+
+  // Activate text selection-toolbox.
+  content.addEventListener("mousedown", event => {
+    // Show select toolbox.
+    if ((event.ctrlKey || event.metaKey) && window.getSelection().toString().length) {
+      selectionMenuLock = true;
+      event.preventDefault();
+      toolbox.selection();
+    }
+  });
+
+
+  // Handle Clicks.
   content.addEventListener("click", event => {
     selectedBlock = null;
 
-    if (event.target.dataset.noedit) {
-      event.preventDefault();
-      selectNode(event.target);
-      selectedBlock = event.target;
-      (event.ctrlKey || event.metaKey) && toolbox.open(event.target);
-      return;
-    } else if (event.target.dataset && event.target.dataset.md && (event.ctrlKey || event.metaKey)) {
-      event.stopPropagation();
-      toolbox.open(event.target);
-      return;
+    // Allow selection-toolbox to be use inside other elements and to no be close when selecting pure text.
+    if (!selectionMenuLock) {
+      // Handle ckicks on non-editabe elments.
+      if (event.target.dataset.noedit) {
+        event.preventDefault();
+        selectNode(event.target);
+        selectedBlock = event.target;
+        (event.ctrlKey || event.metaKey) && toolbox.open(event.target);
+        return;
+      // Show dedicated toolbox.
+      } else if (event.target.dataset && event.target.dataset.md && (event.ctrlKey || event.metaKey)) {
+        event.stopPropagation();
+        toolbox.open(event.target);
+        return;
+      }
+      toolbox.close();
     }
 
-    toolbox.close();
+    selectionMenuLock = false;
   });
 
 
@@ -72,11 +91,6 @@ export default function MiniEdit(selector, namespace) {
     }
 
     selectedBlock = null;
-
-    // Show select toolnbox.
-    if ((event.ctrlKey || event.metaKey) && window.getSelection().toString().length) {
-      toolbox.selection(extractMarkdown(selectionToHtml()));
-    }
 
     // ENTER.
     if (event.code === "Enter") {

@@ -1,4 +1,6 @@
 import { createElement } from "@ludekarts/utility-belt";
+// import { extractMarkdown } from "../utils/parsers";
+import { selectionToHtml } from "../shared/select";
 import factory from "./factory";
 
 export default function Toolbox(content) {
@@ -16,16 +18,16 @@ export default function Toolbox(content) {
   content.parentNode.appendChild(element);
 
   // Toolbox core.
-  function showToolbox(target) {
+  function showToolbox() {
 
     // Get current editor instance.
-    const editor = toolsFactory.getEditor(target.dataset.md, currentTarget);
+    const editor = toolsFactory.getEditor(currentTarget.dataset.md, currentTarget);
     installTool(editor);
 
     // Set toolbox coordinates.
-    const {x, y, width} = target.getBoundingClientRect();
-    element.style.top = `${y - element.offsetHeight}px`;
-    element.style.left = `${x + width/2 - 34}px`;
+    const {x, y, width} = getTargetPosition(currentTarget);
+    element.style.top = `${y - element.offsetHeight - 25}px`;
+    element.style.left = `${(x + width)/2 + editor.element.offsetWidth/2}px`;
     element.classList.add("active");
 
     // Set listeners for close events.
@@ -65,7 +67,7 @@ export default function Toolbox(content) {
   return Object.freeze({
     open(target) {
       currentTarget = target;
-      showToolbox(currentTarget);
+      showToolbox();
     },
 
     close() {
@@ -73,9 +75,21 @@ export default function Toolbox(content) {
       closeToolbox();
     },
 
-    selection(markdown) {
-      console.log(markdown);
-      showToolbox({dataset:{md:"quote"}});
+    selection() {
+      const selectedHtml = selectionToHtml();
+      selectedHtml.dataset.md = "selection";
+      currentTarget = selectedHtml;
+      console.log(currentTarget);
+
+      showToolbox();
     }
   });
+}
+
+// ---- Helpers
+
+function getTargetPosition(target) {
+  return target.dataset.md === "selection"
+    ? window.getSelection().getRangeAt(0).getBoundingClientRect()
+    : target.getBoundingClientRect();
 }

@@ -32,7 +32,9 @@ export default function BasicEditor() {
 
     function unwrapElement() {
       if (currentTarget.nodeType === 1) {
-        unwrapNode(currentTarget);
+        !currentTarget.parentNode
+          ? document.execCommand("insertHTML", false, currentTarget.textContent)
+          : unwrapNode(currentTarget);
       }
     }
 
@@ -41,42 +43,42 @@ export default function BasicEditor() {
     }
 
     function updateHeadline(size) {
-      replaceNode(
+      insertNode(
         currentTarget,
         `<${headlines[size]} data-md="${size}">${currentTarget.innerHTML}</${headlines[size]}>`
       );
     }
 
     function boldElement() {
-      replaceNode(
+      insertNode(
         currentTarget,
-        `<strong data-md="strong">${currentTarget.textContent}</strong>`
+        `<strong data-md="bold">${currentTarget.textContent}</strong>`
       );
     }
 
     function italicElement() {
-      replaceNode(
+      insertNode(
         currentTarget,
         `<em data-md="italic">${currentTarget.textContent}</em>`
       );
     }
 
     function strikeElement() {
-      replaceNode(
+      insertNode(
         currentTarget,
         `<s data-md="strike">${currentTarget.textContent}</s>`
       );
     }
 
     function quoteElement() {
-      replaceNode(
+      insertNode(
         currentTarget,
-        `<blockquote data-block="true" data-md="quote">${currentTarget.textContent}</blockquote>`
+        `<blockquote data-block="true" data-md="quote">${currentTarget.innerHTML}</blockquote>`
       );
     }
 
     function linkElement() {
-      replaceNode(
+      insertNode(
         currentTarget,
         `<a data-md="link" href="">${currentTarget.textContent}</a>`
       );
@@ -125,4 +127,13 @@ export default function BasicEditor() {
       }
     };
   }
+}
+
+// ---- Helpers ----------------
+
+function insertNode(target, markup) {
+  replaceNode(
+    target.parentNode ? target : null, // Enable transforming selections.
+    markup,
+  );
 }
