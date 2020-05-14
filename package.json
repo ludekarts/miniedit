@@ -5,10 +5,12 @@
   "source": "src/index.js",
   "main": "dist/miniedit.js",
   "unpkg": "dist/miniedit.umd.js",
+  "homepage": "https://ludekarts.github.io/miniedit",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "microbundle --no-sourcemap --external none",
-    "watch": "microbundle watch --external none -f es"
+    "build": "microbundle --no-sourcemap --external none && copyfiles -f ./dist/miniedit.esm.js ./preview",
+    "watch": "microbundle watch --external none -f es",
+    "deploy": "npm run build && gh-pages -d preview"
   },
   "keywords": [
     "editor",
@@ -17,6 +19,8 @@
   "author": "Wojciech Ludwin, @ludekarts, ludekarts@gmail.com",
   "license": "MIT",
   "devDependencies": {
+    "copyfiles": "^2.2.0",
+    "gh-pages": "^2.2.0",
     "microbundle": "^0.12.0",
     "parcel": "^1.12.4"
   },
