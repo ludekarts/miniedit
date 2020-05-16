@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "microbundle --no-sourcemap --external none && copyfiles -f ./dist/miniedit.esm.js ./preview",
-    "watch": "microbundle watch --external none -f es",
+    "start": "microbundle watch --no-compress --external none -f es",
     "deploy": "npm run build && gh-pages -d preview"
   },
   "keywords": [
@@ -21,8 +21,7 @@
   "devDependencies": {
     "copyfiles": "^2.2.0",
     "gh-pages": "^2.2.0",
-    "microbundle": "^0.12.0",
-    "parcel": "^1.12.4"
+    "microbundle": "^0.12.0"
   },
   "dependencies": {
     "@ludekarts/utility-belt": "0.1.0-alpha.3"

@@ -10,6 +10,8 @@ import { debounce, chromeEolHack, transform, resetCurrentCaretStyle, attachStyle
 // Styles.
 import createStyles from "./styles.js";
 
+const blankKeys = /(control|shift|alt|arrow)/gi
+
 // Core.
 export default function MiniEdit(selector, namespace) {
 
@@ -37,6 +39,8 @@ export default function MiniEdit(selector, namespace) {
   // Render after each keyboard sequence.
   const render = debounce(() => {
     const text = getCaretNode();
+    console.log("render");
+
     chromeEolHack(() => {
       markdownToHtml.forEach(
         pattern => transform(text, pattern.match, pattern.format),
@@ -48,10 +52,10 @@ export default function MiniEdit(selector, namespace) {
   // Activate text selection-toolbox.
   content.addEventListener("mousedown", event => {
     // Show select toolbox.
-    if ((event.ctrlKey || event.metaKey) && window.getSelection().toString().length) {
+    if (event.altKey && window.getSelection().toString().length) {
       selectionMenuLock = true;
-      event.preventDefault();
       toolbox.selection();
+      event.preventDefault();
     }
   });
 
@@ -67,10 +71,10 @@ export default function MiniEdit(selector, namespace) {
         event.preventDefault();
         selectNode(event.target);
         selectedBlock = event.target;
-        (event.ctrlKey || event.metaKey) && toolbox.open(event.target);
+        event.altKey && toolbox.open(event.target);
         return;
       // Show dedicated toolbox.
-      } else if (event.target.dataset && event.target.dataset.md && (event.ctrlKey || event.metaKey)) {
+      } else if (event.target.dataset && event.target.dataset.md && event.altKey /*event.altKey */) {
         event.stopPropagation();
         toolbox.open(event.target);
         return;
@@ -85,9 +89,13 @@ export default function MiniEdit(selector, namespace) {
   // Handle KEYBOARD.
   content.addEventListener("keydown", event => {
 
-    // Remvoe selected noneditable block.
-    if (selectedBlock && !event.code.includes("Arrow") && !(event.ctrlKey || event.metaKey)) {
+    // Current selection length.
+    const selectionLength = window.getSelection().toString().length;
+
+    // Remvoe selected noneditable block - fix for <figure>s not being removed form the DOM.
+    if (selectedBlock && !event.code.includes("Arrow") && !(event.ctrlKey || event.shiftKey || event.altKey)) {
       deleteNode(selectedBlock);
+      console.log("del");
     }
 
     selectedBlock = null;
@@ -95,10 +103,8 @@ export default function MiniEdit(selector, namespace) {
     // ENTER.
     if (event.code === "Enter") {
       event.preventDefault();
-
       const text = getCaretNode();
       const node = text.parentNode;
-      // console.log(text, node);
 
       // Prevent from breaking non-text nodes.
       if (node.dataset.md) {
@@ -115,7 +121,7 @@ export default function MiniEdit(selector, namespace) {
     }
 
     // Ctrl/Command + Space.
-    if ((event.ctrlKey || event.metaKey) && event.code === "Space") {
+    if (event.altKey  && event.code === "Space") {
       const text = getCaretNode();
       const node = text.parentNode;
       const range = window.getSelection().getRangeAt(0);
@@ -126,12 +132,9 @@ export default function MiniEdit(selector, namespace) {
 
     // Backspace.
     if (event.code === "Backspace") {
-      // const text = getCaretNode();
-      const selection = window.getSelection().toString().length;
-
       // Code below removes text and associated styles when user selects entire
       // styled text node (e.g. strong) and removes it with Backspace key.
-      if (selection > 0) {
+      if (selectionLength > 0) {
         event.preventDefault();
         document.execCommand("delete");
         resetCurrentCaretStyle();
@@ -145,8 +148,7 @@ export default function MiniEdit(selector, namespace) {
     if (event.code === "Delete") {
 
       const text = getCaretNode();
-      const selection = window.getSelection()
-      const nonZeroSelection = selection.toString().length > 0;
+      const nonZeroSelection = selectionLength > 0;
 
       // Code below removes text and associated styles when user selects entire
       // styled text node (e.g. strong) and removes it with Delete key.
@@ -169,13 +171,13 @@ export default function MiniEdit(selector, namespace) {
     }
 
     // Ctrl + Z.
-    if (event.code === "KeyZ" && (event.ctrlKey || event.metaKey)) {
+    if (event.code === "KeyZ" && event.altKey ) {
       // Do not render - allow to get back to the moment when markdown haven't been yet converted into node.
       undoMode = true;
       return;
     }
 
-    if ((event.ctrlKey || event.metaKey) && (event.code === "KeyB" || event.code === "KeyI")) {
+    if (event.altKey  && (event.code === "KeyB" || event.code === "KeyI") && !event.shiftKey) {
       return event.preventDefault();
     }
 
@@ -184,27 +186,18 @@ export default function MiniEdit(selector, namespace) {
       return console.log(extractMarkdown(content));
     }
 
-    // Unwrap caret node.
-    if (event.code === "F4") {
-      const node = getCaretNode();
-      chromeEolHack(() => {
-        unwrapNode(node.parentNode);
-      })
-      return;
-    }
-
     // Do not allow input text into noneditable nodes + select node.
     const node = getCaretNode();
-    if (node.dataset && node.dataset.noedit) {
+    if (node.dataset && node.dataset.noedit && selectionLength === 0) {
       event.preventDefault();
+      selectNode(node);
 
       if (event.code === "ArrowDown" || event.code === "ArrowRight") {
-        caretAfterNode(node.nextSibling);
+        node.nextSibling && caretAfterNode(node.nextSibling);
       } else if (event.code === "ArrowUp" || event.code === "ArrowLeft") {
-        caretBeforeNode(node.previousSibling);
+        node.previousSibling && caretBeforeNode(node.previousSibling);
       }
 
-      selectNode(node);
       selectedBlock = node;
     }
 
@@ -212,7 +205,10 @@ export default function MiniEdit(selector, namespace) {
     undoMode = false;
 
     // Rnder inline markdown.
-    render();
+    // console.log(event.code);
+
+    !(event.ctrlKey || event.shiftKey || event.code.includes("Arrow")) && render() ;
+
   });
 
   // Prevent Drag & Drop.
@@ -284,6 +280,11 @@ export default function MiniEdit(selector, namespace) {
 
     getText: () => {
       return extractMarkdown(content);
-    }
+    },
+
+    extend: ({name, type, match, format, extract}) => {
+      // TO DO: Enable extending markup.
+    },
+
   });
 }
