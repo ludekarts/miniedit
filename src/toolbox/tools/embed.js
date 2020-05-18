@@ -4,12 +4,8 @@ export default function EmbedEditor() {
   return currentTarget => {
     const element = template`
       <div class="toolbox-controllers">
-        <button data-action="follow" title="Open in YouTube">
-          <i class="fa fa-eraser">↗</i>
-        </button>
-        <button data-action="close" title="Close toolbox">
-          <i class="fa fa-times">✖</i>
-        </button>
+        <button data-action="follow" title="Open in YouTube">↗</button>
+        <button data-action="close" title="Close toolbox">✖</button>
       </div>
     `;
 

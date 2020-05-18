@@ -11,15 +11,9 @@ export default function ImageEditor() {
           <input ref="link" class="name" type="text" placeholder="External URL">
         </div>
         <div>
-          <button data-action="update" title="Update image">
-            <i class="fa fa-check">✔</i>
-          </button>
-          <button data-action="copy" title="Copy link"">
-            <i class="fa fa-clipboard">❐</i>
-          </button>
-          <button data-action="close" title="Close toolbox">
-            <i class="fa fa-times">✖</i>
-          </button>
+          <button data-action="update" title="Update image">✔</button>
+          <button data-action="copy" title="Copy link"">❐</button>
+          <button data-action="close" title="Close toolbox">✖</button>
         </div>
       </div>
     `;

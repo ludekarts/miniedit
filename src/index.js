@@ -10,8 +10,6 @@ import { debounce, chromeEolHack, transform, resetCurrentCaretStyle, attachStyle
 // Styles.
 import createStyles from "./styles.js";
 
-const blankKeys = /(control|shift|alt|arrow)/gi
-
 // Core.
 export default function MiniEdit(selector, namespace) {
 

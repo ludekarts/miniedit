@@ -89,7 +89,7 @@ export const markdownToHtml = [
   },
   {
     // New Lines.
-    match: /\n/gm,
+    match: /\n/g,
     format: (match, content) => `<br data-md="nl"/>`
   },
 ];

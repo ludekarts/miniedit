@@ -26,10 +26,12 @@ export function extractMarkdown(container) {
     // Nested elements.
     } else {
       const transform = markdownMarkup[node.dataset.md];
-      acc += transform ? transform(extractMarkdown(node)) : node.textContent;
+      acc += transform ? transform(extractMarkdown(node)) : node.outerHTML;
     }
     return acc;
-  }, "");
+  }, "")
+  // Stop new line multiplying when copy-pasting.
+  .replace(/\n\n\n/gm, "\n");
 }
 
 
