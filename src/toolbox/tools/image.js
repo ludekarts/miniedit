@@ -1,5 +1,6 @@
 import { template } from "@ludekarts/utility-belt";
 import { selectNodeExt } from "../../shared/select";
+import { CheckIcon, FollowIcon, CopyIcon, CloseIcon } from "../../shared/icons";
 
 export default function ImageEditor() {
   return currentTarget => {
@@ -11,9 +12,13 @@ export default function ImageEditor() {
           <input ref="link" class="name" type="text" placeholder="External URL">
         </div>
         <div>
-          <button data-action="update" title="Update image">✔</button>
-          <button data-action="copy" title="Copy link"">❐</button>
-          <button data-action="close" title="Close toolbox">✖</button>
+          <button data-action="update" title="Update image">${CheckIcon}</button>
+          <button data-action="copy" title="Copy link">${CopyIcon}</button>
+          ${currentTarget.dataset.link
+              ? `<button data-action="follow" title="Copy link"">${FollowIcon}</button>`
+              : ""
+          }
+          <button data-action="close" title="Close toolbox">${CloseIcon}</button>
         </div>
       </div>
     `;
@@ -23,7 +28,6 @@ export default function ImageEditor() {
     if (currentTarget.dataset.link) {
       refs.link.value = currentTarget.dataset.link;
     }
-
 
     // ---- Methods ------------
 
@@ -39,6 +43,10 @@ export default function ImageEditor() {
       refs.url.blur();
     }
 
+    function followLink() {
+      window.open(currentTarget.dataset.link, "_blank");
+    }
+
 
     // ---- API ----------------
 
@@ -49,6 +57,10 @@ export default function ImageEditor() {
           case "update":
             updateTarget();
             return;
+
+          case "follow":
+            followLink();
+            return true;
 
           case "copy":
             copyLink();

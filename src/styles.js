@@ -147,8 +147,11 @@ export default function createStyles(namespace = "") {
       height: 30px;
       border: none;
       color: white;
+      cursor: pointer;
       background: none;
       font-weight: 500;
+      font-size: 1.2rem;
+      line-height: 1.9em;
       position: relative;
       display: inline-block;
       transition: box-shadow .3s ease;

@@ -1,11 +1,11 @@
 import Toolbox from "./toolbox";
 import oberver from "./utils/observer";
+import { deleteNode } from "./shared/node";
 import { markdownToHtml } from "./shared/patterns";
-import { unwrapNode, deleteNode } from "./shared/node";
 import { selectNode, selectionToHtml } from "./shared/select";
 import { parseMarkdown, extractMarkdown } from "./utils/parsers";
-import { getCaretNode,  getCaretPosition, caretToStart, caretAfterNode, caretBeforeNode } from "./shared/caret";
 import { debounce, chromeEolHack, transform, resetCurrentCaretStyle, attachStyle } from "./utils";
+import { getCaretNode, getCaretPosition, caretToStart, caretAfterNode, caretBeforeNode } from "./shared/caret";
 
 // Styles.
 import createStyles from "./styles.js";
@@ -37,8 +37,6 @@ export default function MiniEdit(selector, namespace) {
   // Render after each keyboard sequence.
   const render = debounce(() => {
     const text = getCaretNode();
-    console.log("render");
-
     chromeEolHack(() => {
       markdownToHtml.forEach(
         pattern => transform(text, pattern.match, pattern.format),
@@ -93,7 +91,6 @@ export default function MiniEdit(selector, namespace) {
     // Remvoe selected noneditable block - fix for <figure>s not being removed form the DOM.
     if (selectedBlock && !event.code.includes("Arrow") && !(event.ctrlKey || event.shiftKey || event.altKey)) {
       deleteNode(selectedBlock);
-      console.log("del");
     }
 
     selectedBlock = null;
@@ -138,7 +135,6 @@ export default function MiniEdit(selector, namespace) {
         resetCurrentCaretStyle();
         return;
       }
-
       return;
     }
 

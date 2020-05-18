@@ -1,5 +1,6 @@
 import { template } from "@ludekarts/utility-belt";
 import { unwrapNode, replaceNode } from "../../shared/node";
+import { CheckIcon, FollowIcon, CopyIcon, ClearIcon, CloseIcon } from "../../shared/icons";
 
 export default function LinkEditor() {
   return currentTarget => {
@@ -10,11 +11,11 @@ export default function LinkEditor() {
           <input ref="url" class="url" type="text" placeholder="Link URL">
         </div>
         <div>
-          <button data-action="update" title="Update link">✔</button>
-          <button data-action="follow" title="Follow link"">↗</button>
-          <button data-action="copy" title="Copy link">❐</button>
-          <button data-action="clear" title="Clear styles">※</button>
-          <button data-action="close" title="Close toolbox">✖</button>
+          <button data-action="update" title="Update link">${CheckIcon}</button>
+          <button data-action="follow" title="Follow link">${FollowIcon}</button>
+          <button data-action="copy" title="Copy link">${CopyIcon}</button>
+          <button data-action="clear" title="Clear styles">${ClearIcon}</button>
+          <button data-action="close" title="Close toolbox">${CloseIcon}</button>
         </div>
       </div>
     `;
