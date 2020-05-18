@@ -150,8 +150,8 @@ export default function createStyles(namespace = "") {
       cursor: pointer;
       background: none;
       font-weight: 500;
-      font-size: 1.2rem;
-      line-height: 1.9em;
+      line-height: 2em;
+      font-size: 1.1rem;
       position: relative;
       display: inline-block;
       transition: box-shadow .3s ease;
@@ -192,6 +192,17 @@ export default function createStyles(namespace = "") {
 
     div[data-miniedit-toolbox] .toolbox-controllers button.pressable:active {
       transform: scale(0.8);
+    }
+
+    div[data-miniedit-toolbox] .toolbox-basic {
+      width: 280px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    div[data-miniedit-toolbox] .toolbox-buttons {
+      display: flex;
+      justify-content: space-between;
     }
 
     div[data-miniedit-toolbox] .list {

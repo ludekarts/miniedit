@@ -11,7 +11,7 @@ export default function ImageEditor() {
           <input ref="url" class="name" type="text" placeholder="Image URL">
           <input ref="link" class="name" type="text" placeholder="External URL">
         </div>
-        <div>
+        <div class="toolbox-buttons">
           <button data-action="update" title="Update image">${CheckIcon}</button>
           <button data-action="copy" title="Copy link">${CopyIcon}</button>
           ${currentTarget.dataset.link

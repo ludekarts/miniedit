@@ -10,7 +10,7 @@ export default function BasicEditor() {
   return currentTarget => {
     const [element, refs] = template`
       <div class="toolbox-controllers">
-        <div>
+        <div class="toolbox-basic">
           <button class="${currentTarget.dataset.md.includes("#") ? "active" : ""}" data-action="headlines" title="Nagłówki">${HeadlineIcon}</button>
           <button class="${currentTarget.dataset.md === "bold" ? "active" : ""}" data-action="bold" title="Bold">${BoldIcon}</button>
           <button class="${currentTarget.dataset.md === "italic" ? "active" : ""}" data-action="italic" title="Italic">${ItalicIcon}</button>

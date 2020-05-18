@@ -10,7 +10,7 @@ export default function LinkEditor() {
           <input ref="name" class="name" type="text" placeholder="Link Name">
           <input ref="url" class="url" type="text" placeholder="Link URL">
         </div>
-        <div>
+        <div class="toolbox-buttons">
           <button data-action="update" title="Update link">${CheckIcon}</button>
           <button data-action="follow" title="Follow link">${FollowIcon}</button>
           <button data-action="copy" title="Copy link">${CopyIcon}</button>
