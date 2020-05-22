@@ -11,11 +11,23 @@
   <h1 class="me-header">MiniEdit</h1>
   <section id="container" class="container"></section>
   <script type="module">
-    // import MiniEdit from "./miniedit.esm.js"; // Production.
-    import MiniEdit from "../dist/miniedit.esm.js"; // Development.
-    import article from "./sample-text.js";
-    const editor = MiniEdit("#container");
-    editor.setText(article);
+    async function setup() {
+      let MiniEdit;
+      let { default: article } = await import("./sample-text.js");
+      try {
+        // Development.
+        const module = await import("../dist/miniedit.esm.js");
+        MiniEdit = module.default;
+      } catch (error) {
+        // Production.
+        const module = await import("./miniedit.esm.js").default;
+        MiniEdit = module.default;
+      } finally {
+        const editor = MiniEdit("#container");
+        editor.setText(article);
+      }
+    };
+    setup();
   </script>
 </body>
 </html>
