@@ -11,7 +11,8 @@
   <h1 class="me-header">MiniEdit</h1>
   <section id="container" class="container"></section>
   <script type="module">
-    import MiniEdit from "./miniedit.esm.js";
+    // import MiniEdit from "./miniedit.esm.js"; // Production.
+    import MiniEdit from "../dist/miniedit.esm.js"; // Development.
     import article from "./sample-text.js";
     const editor = MiniEdit("#container");
     editor.setText(article);

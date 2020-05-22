@@ -9,7 +9,7 @@ export default `
 
 https://cdn.pixabay.com/photo/2016/05/24/16/48/mountains-1412683_960_720.png
 
-> Blockquote text here: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi tristique, nibh eu eleifend scelerisque, urna quam ornare erat, vitae pharetra ligula ante non odio. Vestibulum auctor risus id urna blandit, eget tristique metus ullamcorper. In sodales, risus id accumsan mollis, ex dui scelerisque justo, id scelerisque nibh felis in eros.
+> Blockquote text here: <foreign pronauce="forein">Lorem</foreign> ipsum dolor sit amet, consectetur adipiscing elit. Morbi tristique, nibh eu eleifend scelerisque, urna quam ornare erat, vitae pharetra ligula ante non odio. Vestibulum auctor risus id urna blandit, eget tristique metus ullamcorper. In sodales, risus id accumsan mollis, ex dui scelerisque justo, id scelerisque nibh felis in eros.
 
 **Shawn James** – *Who Did That To You*
 https://www.youtube.com/watch?v=22p9yHXldr0
