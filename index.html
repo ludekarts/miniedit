@@ -20,7 +20,7 @@
         MiniEdit = module.default;
       } catch (error) {
         // Production.
-        const module = await import("./miniedit.esm.js").default;
+        const module = await import("./miniedit.esm.js");
         MiniEdit = module.default;
       } finally {
         const editor = MiniEdit("#container");
