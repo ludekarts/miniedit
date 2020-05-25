@@ -65,12 +65,12 @@ export const markdownToHtml = [
     match: /!?\[(.*?)\]\((.*?)\)/gm,
     format: (match, text, url) => {
       if (match.indexOf("!") === 0) {
-        return `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${url}" alt="${text}"/></figure>`;
+        return `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${url}" alt="${text}"/></figure><br data-md="nl"/>`;
       }
 
       // This will be triggered most often when user copy and paste YT link in the editor.
       if (text === url && url.includes("youtube.com")) {
-        return `<figure data-md="embed" data-block="true" data-noedit="true"data-click="showEmbedOptions" data><img src="${formatYTCover(url)}" alt="${url}"/></figure>`
+        return `<figure data-md="embed" data-block="true" data-noedit="true"data-click="showEmbedOptions" data><img src="${formatYTCover(url)}" alt="${url}"/></figure><br data-md="nl"/>`
       }
 
       return `<a href="${url}" data-md="link">${text}</a>`;
@@ -83,11 +83,11 @@ export const markdownToHtml = [
       const isImage = /\.(gif|png|jpe?g|svg|tiff)$/g.test(url);
 
       if (isImage) {
-        return `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${url}" alt="figure"/></figure>`;
+        return `<figure data-md="img" data-block="true" data-noedit="true" data-click="showImageOptions"><img src="${url}" alt="figure"/></figure><br data-md="nl"/>`;
       }
 
       if (url.includes("youtube.com")) {
-        return `<figure data-md="embed" data-block="true" data-noedit="true"data-click="showEmbedOptions" data><img src="${formatYTCover(url)}" alt="${url}"/></figure>`
+        return `<figure data-md="embed" data-block="true" data-noedit="true"data-click="showEmbedOptions" data><img src="${formatYTCover(url)}" alt="${url}"/></figure><br data-md="nl"/>`
       }
 
       return `<a href="${url}" data-md="link">${cropUrl(url)}</a>`;

@@ -1,5 +1,6 @@
 import { template } from "@ludekarts/utility-belt";
-import { selectNodeExt } from "../../shared/select";
+import { caretBeforeNode } from "../../shared/caret";
+import { deleteNode, insertNodeBefore } from "../../shared/node";
 import { CheckIcon, FollowIcon, CopyIcon, CloseIcon } from "../../shared/icons";
 
 export default function ImageEditor() {
@@ -32,9 +33,25 @@ export default function ImageEditor() {
     // ---- Methods ------------
 
     function updateTarget() {
-      selectNodeExt(currentTarget);
+      let marker;
+      const nextElement = currentTarget.nextSibling;
+      deleteNode(currentTarget);
+
+      // Place marker to poperly place caret - this action is not recorded by conteneditable history.
+      if (nextElement) {
+        marker = document.createTextNode("﻿");  // &#xfeff; - ZERO WIDTH NO-BREAK SPACE
+        insertNodeBefore(marker, nextElement);
+        caretBeforeNode(marker);
+      }
+
       const link = refs.link.value ? `data-link="${refs.link.value}" ` : "";
-      document.execCommand("insertHTML", false, `<figure data-md="img" data-block="true" data-noedit="true" ${link}data-click="showImageOptions"><img src="${refs.url.value}" alt="${refs.alt.value}"/></figure>`);
+      document.execCommand("insertHTML", false,
+        `<figure data-md="img" data-block="true" data-noedit="true" ${link}data-click="showImageOptions"><img src="${refs.url.value}" alt="${refs.alt.value}"/></figure>${nextElement.nodeName !== "BR" ? `<br data-md="nl"/>`: ""}`
+      );
+
+
+      // Remove marker.
+      marker && marker.remove();
     }
 
     function copyLink() {

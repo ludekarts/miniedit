@@ -75,4 +75,3 @@ export const caretToStart = node => {
   selection.addRange(range);
   return selection;
 };
-
