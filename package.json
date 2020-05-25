@@ -1,6 +1,6 @@
 {
   "name": "@ludekarts/miniedit",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Minimalistic rich text editor based on Markdown",
   "source": "src/index.js",
   "main": "dist/miniedit.js",

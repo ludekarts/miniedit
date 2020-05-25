@@ -13,7 +13,7 @@ export const selectInlineRange = (element, satrt, end) => {
 // Selects given node.
 export const selectNode = node => {
   const selection = window.getSelection();
-  const range = selection.getRangeAt(0);
+  const range = new Range();
   range.selectNode(node);
   selection.removeAllRanges();
   selection.addRange(range);
@@ -37,8 +37,11 @@ export const selectNodeExt = node => {
     ? 1
     : 0;
 
-  range.setStart(node.previousSibling, startLength);
-  range.setEnd(node.nextSibling, endLength);
+  const startNode = node.previousSibling ? node.previousSibling : node;
+  const endNode = node.nextSibling ? node.nextSibling : node;
+
+  range.setStart(startNode, startLength);
+  range.setEnd(endNode, endLength);
   selection.removeAllRanges();
   selection.addRange(range);
   return selection;

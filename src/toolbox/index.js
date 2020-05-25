@@ -51,7 +51,7 @@ export default function Toolbox(content) {
     element.classList.remove("active");
   }
 
-  // Handle tools internal buttons events -> to unified actions handling among all tools & simplify tool code.
+  // Handle tools internal buttons events, to unify actions handling among all tools & simplify tool's code.
   element.addEventListener("click", event => {
     // Discard all irrelevant clicks.
     if (!event.target.dataset || !event.target.dataset.action) return;
@@ -59,8 +59,16 @@ export default function Toolbox(content) {
     if (event.target.dataset.action === "close") return closeToolbox();
     // Run given command in currentTool and close toolbox.
     if (currentTool) {
-      // NOTE: If command returns "true" tollbox will NOT CLOSE by default.
-      !currentTool.command(event.target.dataset.action) && closeToolbox();
+      const toolNextAction = currentTool.command(event.target.dataset.action);
+      if (!toolNextAction) {
+        closeToolbox();
+      } else if (toolNextAction.target) {
+        closeToolbox();
+        currentTarget = toolNextAction.target;
+        showToolbox();
+      } else {
+        return; // NOTE: If command returns TRUTHY value the tollbox will NOT CLOSE by default.
+      }
     }
   })
 
@@ -86,7 +94,7 @@ export default function Toolbox(content) {
   });
 }
 
-// ---- Helpers
+// ---- Helpers ----------------
 
 function getTargetPosition(target) {
   return target.dataset.md === "selection"

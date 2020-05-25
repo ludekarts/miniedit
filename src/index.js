@@ -69,12 +69,15 @@ export default function MiniEdit(selector, namespace) {
         selectedBlock = event.target;
         event.altKey && toolbox.open(event.target);
         return;
+      }
+
       // Show dedicated toolbox.
-      } else if (event.target.dataset && event.target.dataset.md && event.altKey /*event.altKey */) {
+      if (event.altKey && event.target.dataset && event.target.dataset.md) {
         event.stopPropagation();
         toolbox.open(event.target);
         return;
       }
+
       toolbox.close();
     }
 
@@ -182,7 +185,7 @@ export default function MiniEdit(selector, namespace) {
 
     // Do not allow input text into noneditable nodes + select node.
     const node = getCaretNode();
-    if (node.dataset && node.dataset.noedit && selectionLength === 0) {
+    if (node && node.dataset && node.dataset.noedit && selectionLength === 0) {
       event.preventDefault();
       selectNode(node);
 
@@ -198,10 +201,8 @@ export default function MiniEdit(selector, namespace) {
     // Reset UndoMode.
     undoMode = false;
 
-    // Rnder inline markdown.
-    // console.log(event.code);
-
-    !(event.ctrlKey || event.shiftKey || event.code.includes("Arrow")) && render() ;
+    // Rnder inline markdown only when user uses regular keys - no Ctrl, Alt, Shift & Arrows.
+    !(event.altKey || event.ctrlKey || event.shiftKey || event.code.includes("Arrow")) && render() ;
 
   });
 

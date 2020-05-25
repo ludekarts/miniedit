@@ -44,6 +44,7 @@ export default function BasicEditor() {
 
     function toggleHeadlines() {
       refs.headlines.classList.toggle("active");
+      return true;
     }
 
     function updateHeadline(size) {
@@ -82,10 +83,16 @@ export default function BasicEditor() {
     }
 
     function linkElement() {
+      const tempId = Date.now();
+
       insertNode(
         currentTarget,
-        `<a data-md="link" href="">${currentTarget.innerHTML}</a>`
+        `<a data-md="link" href="" data-tmpid="${tempId}">${currentTarget.innerHTML}</a>`
       );
+
+      return {
+        target: document.querySelector(`a[data-tmpid="${tempId}"]`),
+      };
     }
 
 
@@ -96,32 +103,25 @@ export default function BasicEditor() {
       command: cmd => {
         switch (cmd) {
           case "headlines":
-            toggleHeadlines();
-            return true; // Do not close toolbox.
+            return toggleHeadlines();
 
           case "bold":
-            boldElement();
-            break;
+            return boldElement();
 
           case "italic":
-            italicElement();
-            break;
+            return italicElement();
 
           case "strike":
-            strikeElement();
-            break;
+            return strikeElement();
 
           case "quote":
-            quoteElement();
-            break;
+            return quoteElement();
 
           case "link":
-            linkElement();
-            break;
+            return linkElement();
 
           case "clear":
-            unwrapElement();
-            break;
+            return unwrapElement();
 
           default:
             // Handle all headlines.

@@ -118,6 +118,7 @@ export default function createStyles(namespace = "") {
       opacity: 0;
       padding: 5px;
       z-index: 3500;
+      font-size: 1rem;
       position: fixed;
       overflow: hidden;
       visibility: hidden;
