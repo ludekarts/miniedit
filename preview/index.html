@@ -9,7 +9,7 @@
 <body>
 
   <h1 class="me-header">MiniEdit</h1>
-  <section id="container" class="container"></section>
+  <section id="container" class="container"><strong data-md="bold">Hello</strong> world</section>
   <script type="module">
     async function setup() {
       let MiniEdit;
@@ -23,8 +23,8 @@
         const module = await import("./miniedit.esm.js");
         MiniEdit = module.default;
       } finally {
-        const editor = MiniEdit("#container");
-        editor.setText(article);
+        const editor = MiniEdit("#container", {focus: true});
+        // editor.setText(article);
       }
     };
     setup();

@@ -4,13 +4,8 @@ export default function createStyles(namespace = "") {
       outline: none;
     }
 
-    *[data-miniedit]$NS h1,
-    *[data-miniedit]$NS h2,
-    *[data-miniedit]$NS h3,
-    *[data-miniedit]$NS h4,
-    *[data-miniedit]$NS h5,
-    *[data-miniedit]$NS h6 {
-      display: inline-block;
+    *[data-miniedit]$NS *[data-md] {
+      display: inline;
     }
 
     *[data-miniedit]$NS h1[data-md="#"] {
@@ -41,7 +36,7 @@ export default function createStyles(namespace = "") {
     *[data-miniedit]$NS blockquote[data-md="quote"] {
       margin: 0;
       width: 100%;
-      padding: 0.3em 1em;
+      padding: 0.3em;
       display: inline-block;
       background-color: #eee;
     }
@@ -51,7 +46,6 @@ export default function createStyles(namespace = "") {
       margin: 0;
       overflow: hidden;
       position: relative;
-      display: inline-block;
     }
 
     *[data-miniedit]$NS figure[data-md="embed"]::before {
@@ -108,7 +102,6 @@ export default function createStyles(namespace = "") {
       height: 1px;
       border: none;
       margin: 1.2em 0;
-      display: inline-block;
       border-bottom: 1px solid #ccc;
     }
 

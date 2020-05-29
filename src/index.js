@@ -1,88 +1,38 @@
 import Toolbox from "./toolbox";
 import oberver from "./utils/observer";
-import { deleteNode } from "./shared/node";
+import { debounce, stickToEol } from "./utils";
 import { markdownToHtml } from "./shared/patterns";
-import { selectNode, selectionToHtml } from "./shared/select";
+import { attachStyle } from "@ludekarts/utility-belt";
 import { parseMarkdown, extractMarkdown } from "./utils/parsers";
-import { debounce, chromeEolHack, transform, resetCurrentCaretStyle, attachStyle } from "./utils";
+import { selectNode, selectionToHtml, selectNodeExt, selectInlineRange } from "./shared/select";
 import { getCaretNode, getCaretPosition, caretToStart, caretAfterNode, caretBeforeNode } from "./shared/caret";
 
 // Styles.
 import createStyles from "./styles.js";
 
 // Core.
-export default function MiniEdit(selector, namespace) {
+export default function MiniEdit(selector, { namespace = "", focus = false }) {
 
-  // Attach CSS styles.
-  attachStyle(createStyles(namespace));
-
-  // Global referenes.
-  let undoMode = false;
-  let selectedBlock = null;
-  let selectionMenuLock = false;
-
-  // Set main content container.
-  let content = selector instanceof HTMLElement
-    ? selector
-    : document.querySelector(selector);
-
-  content.dataset.block = "true";
-  content.dataset.miniedit = "🧱";
-  content.setAttribute("contenteditable", true);
-  content.focus();
+  // Setup workspace.
+  const content = setupEnvironment(selector, namespace, focus);
 
   // Initialize inline toolboxes.
   const toolbox = Toolbox(content);
 
+  // Globals.
+  let undoMode = false;
+  let selectedBlock = null;
+  let selectionMenuLock = false;
+
   // Render after each keyboard sequence.
   const render = debounce(() => {
     const text = getCaretNode();
-    chromeEolHack(() => {
+    stickToEol(() => {
       markdownToHtml.forEach(
-        pattern => transform(text, pattern.match, pattern.format),
+        pattern => parseInlineMarkdown(text, pattern.match, pattern.format),
       );
     });
   }, 300);
-
-
-  // Activate text selection-toolbox.
-  content.addEventListener("mousedown", event => {
-    // Show select toolbox.
-    if (event.altKey && window.getSelection().toString().length) {
-      selectionMenuLock = true;
-      toolbox.selection();
-      event.preventDefault();
-    }
-  });
-
-
-  // Handle Clicks.
-  content.addEventListener("click", event => {
-    selectedBlock = null;
-
-    // Allow selection-toolbox to be use inside other elements and to no be close when selecting pure text.
-    if (!selectionMenuLock) {
-      // Handle ckicks on non-editabe elments.
-      if (event.target.dataset.noedit) {
-        event.preventDefault();
-        selectNode(event.target);
-        selectedBlock = event.target;
-        event.altKey && toolbox.open(event.target);
-        return;
-      }
-
-      // Show dedicated toolbox.
-      if (event.altKey && event.target.dataset && event.target.dataset.md) {
-        event.stopPropagation();
-        toolbox.open(event.target);
-        return;
-      }
-
-      toolbox.close();
-    }
-
-    selectionMenuLock = false;
-  });
 
 
   // Handle KEYBOARD.
@@ -91,14 +41,22 @@ export default function MiniEdit(selector, namespace) {
     // Current selection length.
     const selectionLength = window.getSelection().toString().length;
 
-    // Remvoe selected noneditable block - fix for <figure>s not being removed form the DOM.
-    if (selectedBlock && !event.code.includes("Arrow") && !(event.ctrlKey || event.shiftKey || event.altKey)) {
-      deleteNode(selectedBlock);
+    // Handle non-editable nodes.
+    const node = getCaretNode();
+    if (node.dataset && node.dataset.noedit) {
+      event.preventDefault();
+      if (isTextKey(event)) {
+        document.execCommand("insertHTML", false, "");
+        selectedBlock = null;
+      } else {
+        selectNodeExt(node);
+        selectedBlock = node;
+      }
+      return;
     }
 
-    selectedBlock = null;
+    // ---- Enter ----------------
 
-    // ENTER.
     if (event.code === "Enter") {
       event.preventDefault();
       const text = getCaretNode();
@@ -118,8 +76,10 @@ export default function MiniEdit(selector, namespace) {
       return;
     }
 
-    // Ctrl/Command + Space.
-    if (event.altKey  && event.code === "Space") {
+
+     // ---- Ctrl + Space ----------------
+
+     if (event.code === "Space" && (event.ctrlKey || event.metaKey)) {
       const text = getCaretNode();
       const node = text.parentNode;
       const range = window.getSelection().getRangeAt(0);
@@ -128,20 +88,35 @@ export default function MiniEdit(selector, namespace) {
       return;
     }
 
-    // Backspace.
+
+    // ---- Backspace ----------------
+
     if (event.code === "Backspace") {
-      // Code below removes text and associated styles when user selects entire
+
+      const text = getCaretNode();
+
+      // Removes text and associated styles when user selects entire
       // styled text node (e.g. strong) and removes it with Backspace key.
       if (selectionLength > 0) {
         event.preventDefault();
-        document.execCommand("delete");
-        resetCurrentCaretStyle();
+        document.execCommand("insertHTML", false, "");
         return;
       }
+
+      // Fix for bug in Chrome when user removes content of styled element and stops right after fist letter.
+      // Chrome remove node but if any (excepn Backspace) key is pressed browser applies <span> with mimic styles.
+      if (!selectionLength && text.textContent.length === 1) {
+        event.preventDefault();
+        selectNode(text);
+        document.execCommand("insertHTML", false, "");
+        return;
+      }
+
       return;
     }
 
-    // Delete.
+    // ---- Delete ----------------
+
     if (event.code === "Delete") {
 
       const text = getCaretNode();
@@ -151,31 +126,37 @@ export default function MiniEdit(selector, namespace) {
       // styled text node (e.g. strong) and removes it with Delete key.
       if (nonZeroSelection) {
         event.preventDefault();
-        document.execCommand("delete");
-        resetCurrentCaretStyle();
+        document.execCommand("insertHTML", false, "");
         return;
       }
 
-      // At the END of text node.
+      // Fix for bug in Chrome when user removes content of styled element and stops right after fist letter.
+      // Chrome remove node but if any (excepn Delete) key is pressed browser applies <span> with mimic styles.
+      if (!selectionLength && text.textContent.length === 1) {
+        event.preventDefault();
+        selectNode(text);
+        document.execCommand("insertHTML", false, "");
+        return;
+      }
+
+      // Smooth transition between nodes when using Delete.
       if (getCaretPosition(text) === text.textContent.length) {
-        // Do not merge node styles when using Backspace.
-        if (text.nextElementSibling && text.nextElementSibling.dataset.block) {
-          event.preventDefault();
-          caretToStart(text.nextElementSibling);
-        }
+        event.preventDefault();
+        const next = findNextEditable(text.parentNode);
+        text !== content && caretToStart(next);
       }
       return;
     }
 
-    // Ctrl + Z.
-    if (event.code === "KeyZ" && event.altKey ) {
-      // Do not render - allow to get back to the moment when markdown haven't been yet converted into node.
-      undoMode = true;
-      return;
+    // Block browser's Ctrl + B nad Ctrl + I shortcuts.
+    if ((event.code === "KeyB" || event.code === "KeyI") && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
+      return event.preventDefault();
     }
 
-    if (event.altKey  && (event.code === "KeyB" || event.code === "KeyI") && !event.shiftKey) {
-      return event.preventDefault();
+    // Ctrl + Z - allows preform cleanup after unwrap action.
+    if (event.code === "KeyZ" && (event.ctrlKey || event.metaKey)) {
+      undoMode = true;
+      return;
     }
 
     // Display markdown code.
@@ -183,39 +164,30 @@ export default function MiniEdit(selector, namespace) {
       return console.log(extractMarkdown(content));
     }
 
-    // Do not allow input text into noneditable nodes + select node.
-    const node = getCaretNode();
-    if (node && node.dataset && node.dataset.noedit && selectionLength === 0) {
-      event.preventDefault();
-      selectNode(node);
 
-      if (event.code === "ArrowDown" || event.code === "ArrowRight") {
-        node.nextSibling && caretAfterNode(node.nextSibling);
-      } else if (event.code === "ArrowUp" || event.code === "ArrowLeft") {
-        node.previousSibling && caretBeforeNode(node.previousSibling);
-      }
+    // ---- Reset UndoMode ----------------
 
-      selectedBlock = node;
-    }
-
-    // Reset UndoMode.
     undoMode = false;
 
-    // Rnder inline markdown only when user uses regular keys - no Ctrl, Alt, Shift & Arrows.
-    !(event.altKey || event.ctrlKey || event.shiftKey || event.code.includes("Arrow")) && render() ;
 
+    // ---- Redner content ----------------
+
+    isTextKey(event) && render();
   });
 
-  // Prevent Drag & Drop.
+
+  // ---- Prevent Drag & Drop ----------------
+
   content.addEventListener("drag", event => {
     event.preventDefault();
   });
 
   content.addEventListener("dragover", event => {
     event.preventDefault();
-  })
+  });
 
-  // CLIPBOARD.
+  // ---- CLipboard ----------------
+
   content.addEventListener("copy", event => {
     event.preventDefault();
     event.clipboardData.setData("text/plain", extractMarkdown(selectionToHtml()));
@@ -224,7 +196,7 @@ export default function MiniEdit(selector, namespace) {
   content.addEventListener("cut", event => {
     event.preventDefault();
     event.clipboardData.setData("text/plain", extractMarkdown(selectionToHtml()));
-    document.execCommand("delete");
+    document.execCommand("insertHTML", false, "");
   });
 
   content.addEventListener("paste", event => {
@@ -232,18 +204,60 @@ export default function MiniEdit(selector, namespace) {
     const node = getCaretNode();
 
     if (node !== content && !node.parentNode.dataset.block) {
-      // Do not allow for pasting formatted content into inline nodes.
+      // Do not allow for pasting formated content into inline nodes.
       const container = document.createElement("div");
       container.innerHTML = parseMarkdown(event.clipboardData.getData("text/plain"));
       document.execCommand("insertHTML", false, container.textContent);
     } else {
       // Paste formatted content.
-      chromeEolHack(() => {
+      stickToEol(() => {
         document.execCommand("insertHTML", false, parseMarkdown(
           event.clipboardData.getData("text/plain")
         ));
       });
     }
+  });
+
+
+  // ---- Toolbox ----------------
+
+  content.addEventListener("mousedown", event => {
+    // Activate text selection-toolbox.
+    if (event.altKey && window.getSelection().toString().length) {
+      selectionMenuLock = true;
+      toolbox.selection();
+      event.preventDefault();
+    }
+  });
+
+
+  // ---- Clicks ----------------
+
+  content.addEventListener("click", event => {
+    selectedBlock = null;
+
+    // Allow selection-toolbox to be use inside other elements and to no be close when selecting pure text.
+    if (!selectionMenuLock) {
+      // Handle ckicks on non-editabe elments.
+      if (event.target.dataset.noedit) {
+        event.preventDefault();
+        selectNodeExt(event.target);
+        selectedBlock = event.target;
+        event.altKey && toolbox.open(event.target);
+        return;
+      }
+
+      // Show dedicated toolbox.
+      if (event.altKey && event.target.dataset && event.target.dataset.md) {
+        event.stopPropagation();
+        toolbox.open(event.target);
+        return;
+      }
+
+      toolbox.close();
+    }
+
+    selectionMenuLock = false;
   });
 
   // DOM clenup.
@@ -253,12 +267,14 @@ export default function MiniEdit(selector, namespace) {
       addedNode.remove();
       return;
     }
+
     // Remove artefacts after undo unwrapNode.
     if (/^\uFEFF/g.test(addedNode.textContent) && undoMode) {
       addedNode.remove();
       return;
     }
   });
+
 
   // ---- API ----------------
 
@@ -268,7 +284,7 @@ export default function MiniEdit(selector, namespace) {
     },
 
     insertText: text => {
-      chromeEolHack(() => {
+      stickToEol(() => {
         document.execCommand("insertHTML", false, parseMarkdown(text));
       });
     },
@@ -277,9 +293,61 @@ export default function MiniEdit(selector, namespace) {
       return extractMarkdown(content);
     },
 
-    extend: ({name, type, match, format, extract}) => {
-      // TO DO: Enable extending markup.
-    },
-
   });
+}
+
+
+// ---- HELPERS ----------------
+
+function setupEnvironment(selector, namespace, focus) {
+   // Attach CSS styles.
+   attachStyle(createStyles(namespace));
+
+   // Set main content container.
+   const content = selector instanceof HTMLElement
+     ? selector
+     : document.querySelector(selector);
+
+   content.dataset.block = "true";
+   content.dataset.miniedit = "🧱";
+   content.setAttribute("contenteditable", true);
+   focus && content.focus();
+
+   return content;
+}
+
+function isTextKey(event) {
+  return !(event.altKey || event.ctrlKey || /(arrow|home|end|page)/ig.test(event.code));
+}
+
+// Parse markdown in single text node.
+function parseInlineMarkdown(element, pattern, format) {
+  let match;
+  if (!element) return;
+  while (match = pattern.exec(element.textContent)) {
+    selectInlineRange(element, match.index, pattern.lastIndex);
+    document.execCommand("insertHTML", false, format(...match));
+  }
+}
+
+// Find next editable element (sibling).
+function findNextEditable(node) {
+  let nextNode = node;
+  let parent = node.parentNode;
+  let nodeIndex = indexOf(parent.childNodes, node) + 1;
+  let stopIndex = parent.childNodes.length;
+  while(nodeIndex < stopIndex && nextNode) {
+    nextNode = parent.childNodes[nodeIndex];
+    if (!nextNode.dataset || nextNode.dataset.md !== "nl") {
+      return nextNode;
+    } else {
+      nodeIndex++;
+    }
+  }
+  return nextNode;
+}
+
+// Index of item in array-like structure.
+function indexOf(structure, item) {
+  return Array.prototype.indexOf.call(structure, item);
 }

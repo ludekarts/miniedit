@@ -1,4 +1,4 @@
-// Allows to select text inside single text-node.
+// Select text inside single text-node.
 export const selectInlineRange = (element, satrt, end) => {
   const range = document.createRange();
   const selection = window.getSelection();

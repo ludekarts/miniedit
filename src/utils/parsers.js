@@ -31,7 +31,9 @@ export function extractMarkdown(container) {
     return acc;
   }, "")
   // Stop new line multiplying when copy-pasting.
-  .replace(/\n\n\n/gm, "\n");
+  .replace(/\n\n\n/gm, "\n")
+  // Clean all no-breaking-spaces.
+  .replace(/&nbsp;/g, " ");
 }
 
 
