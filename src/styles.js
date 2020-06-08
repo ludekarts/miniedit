@@ -46,6 +46,7 @@ export default function createStyles(namespace = "") {
       margin: 0;
       overflow: hidden;
       position: relative;
+      display: inline-block;
     }
 
     *[data-miniedit]$NS figure[data-md="embed"]::before {

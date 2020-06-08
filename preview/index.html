@@ -9,7 +9,7 @@
 <body>
 
   <h1 class="me-header">MiniEdit</h1>
-  <section id="container" class="container"><strong data-md="bold">Hello</strong> world</section>
+  <section id="container" class="container"></section>
   <script type="module">
     async function setup() {
       let MiniEdit;
@@ -24,7 +24,7 @@
         MiniEdit = module.default;
       } finally {
         const editor = MiniEdit("#container", {focus: true});
-        // editor.setText(article);
+        editor.setText(article);
       }
     };
     setup();
